@@ -17,8 +17,11 @@ app.use(cors());
 app.use(express.json());
 
 // Database connection
-console.log('Connecting to database host:', process.env.DB_HOST || 'localhost');
-const pool = new Pool({
+console.log('Connecting to database...');
+const pool = new Pool(process.env.DATABASE_URL ? {
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
+} : {
   user: process.env.DB_USER || 'postgres',
   host: process.env.DB_HOST || 'localhost',
   database: process.env.DB_NAME || 'galaxy_turf',
