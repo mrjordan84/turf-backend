@@ -17,11 +17,8 @@ app.use(cors());
 app.use(express.json());
 
 // Database connection
-console.log('Connecting to database...');
-const pool = new Pool(process.env.DATABASE_URL ? {
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
-} : {
+console.log('Connecting to database host:', process.env.DB_HOST || 'localhost');
+const pool = new Pool({
   user: process.env.DB_USER || 'postgres',
   host: process.env.DB_HOST || 'localhost',
   database: process.env.DB_NAME || 'galaxy_turf',
@@ -65,7 +62,7 @@ app.get('/api/bookings/hours', async (req, res) => {
       "SELECT booked_hours FROM bookings WHERE booking_date = $1 AND status != 'cancelled'",
       [date]
     );
-    
+
     // Flatten array of arrays
     let allBookedHours = [];
     result.rows.forEach(row => {
@@ -73,7 +70,7 @@ app.get('/api/bookings/hours', async (req, res) => {
         allBookedHours.push(...row.booked_hours);
       }
     });
-    
+
     res.json({ bookedHours: allBookedHours });
   } catch (err) {
     console.error(err);
